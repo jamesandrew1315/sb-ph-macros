@@ -38,6 +38,7 @@ a { color: inherit; text-decoration: none; }
 .intro p { margin: 0; color: #69766c; font-size: 14px; }
 
 .content-wrap { width: min(1280px, calc(100% - 64px)); margin: 0 auto; padding: 35px 0 48px; display: grid; grid-template-columns: 188px minmax(360px, 1fr) 296px; gap: 30px; align-items: start; }
+.mobile-tabs { display: none; }
 .sidebar { padding-top: 3px; }
 .sidebar-heading, .category-button, .range-labels, .carb-label, .nutrition-title, .detail-topline { display: flex; align-items: center; justify-content: space-between; }
 .sidebar-heading, .filter-title { color: #59645b; font-size: 12px; font-weight: 700; letter-spacing: .1em; }
@@ -56,7 +57,7 @@ a { color: inherit; text-decoration: none; }
 .carb-label strong { color: var(--green); font-size: 14px; }
 .carb-label.disabled { color: #9a9e95; }
 .carb-label.disabled strong, .range-labels.disabled { color: #a7aaa2; }
-.carb-range { width: 100%; height: 3px; margin: 16px 0 8px; accent-color: var(--green); cursor: pointer; }
+.carb-range { width: calc(100% - 16px); height: 3px; margin: 16px 8px 8px; accent-color: var(--green); cursor: pointer; }
 .carb-range:disabled { opacity: .4; cursor: not-allowed; }
 .range-labels { color: #777e76; font-size: 12px; }
 .filter-caption { margin: 12px 0 0; color: #737a72; font-size: 12px; line-height: 1.55; }
@@ -153,16 +154,21 @@ a { color: inherit; text-decoration: none; }
   .intro { min-height: 142px; padding: 24px 23px; }
   .intro h1 { font-size: 29px; }
   .intro p { max-width: 300px; font-size: 13px; line-height: 1.55; }
-  .content-wrap { width: calc(100% - 36px); padding: 25px 0 34px; grid-template-columns: 1fr; gap: 22px; }
-  .sidebar { padding: 0; }
+  .content-wrap { width: calc(100% - 32px); padding: 18px 0 30px; display: flex; flex-direction: column; gap: 18px; }
+  .mobile-tabs { width: 100%; padding: 3px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; border: 1px solid #dfe2d9; border-radius: 6px; background: #eeefe9; }
+  .mobile-tabs button { min-height: 42px; border: 0; border-radius: 4px; background: transparent; color: #697268; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .mobile-tabs button.active { background: var(--paper); color: var(--green-dark); box-shadow: 0 1px 3px rgba(29,44,38,.12); }
+  .content-wrap.mobile-browse-view .detail-panel { display: none; }
+  .content-wrap.mobile-detail-view .sidebar, .content-wrap.mobile-detail-view .browse { display: none; }
+  .sidebar { width: 100%; min-width: 0; padding: 0; }
   .sidebar-heading { margin-bottom: 8px; }
-  .category-nav { display: flex; gap: 5px; margin-top: 0; overflow-x: auto; padding: 1px 0 6px; scrollbar-width: thin; }
-  .category-button { min-width: max-content; min-height: 31px; gap: 8px; padding: 0 9px; border: 1px solid #e4e3dc; background: #fffefa; }
+  .category-nav { width: 100%; min-width: 0; display: flex; gap: 5px; margin-top: 0; overflow-x: auto; padding: 1px 0 6px; scrollbar-width: thin; }
+  .category-button { min-width: max-content; min-height: 40px; gap: 8px; padding: 0 11px; border: 1px solid #e4e3dc; background: #fffefa; font-size: 13px; }
   .category-button.active { border-color: #c8d7c9; }
   .sidebar-rule, .filter-title, .filter-caption, .sidebar-tip { display: none; }
   .carb-toggle-row { margin-top: 6px; font-size: 12px; }
   .carb-label { margin-top: 7px; font-size: 12px; }
-  .carb-range { margin: 9px 0 3px; }
+  .carb-range { margin: 9px 8px 3px; }
   .range-labels { font-size: 12px; }
   .browse-heading { margin-bottom: 12px; }
   .browse-heading h2 { font-size: 21px; }
@@ -170,11 +176,17 @@ a { color: inherit; text-decoration: none; }
   .sort-box { gap: 4px; padding: 0 6px; }
   .sort-label { display: none; }
   .sort-box select { max-width: 112px; font-size: 12px; }
-  .drink-row { min-height: 70px; padding: 9px 8px; grid-template-columns: 30px minmax(0, 1fr) 42px 45px 10px; gap: 7px; }
+  .drink-row { min-height: 76px; padding: 10px; grid-template-columns: 30px minmax(0, 1fr) 88px; grid-template-rows: 1fr 1fr; grid-template-areas: 'icon info stats' 'icon info calories'; gap: 3px 9px; }
+  .drink-row .drink-icon { grid-area: icon; }
+  .drink-row .drink-info { grid-area: info; align-content: center; }
+  .drink-row .drink-stats { grid-area: stats; display: flex; align-items: baseline; justify-content: flex-end; gap: 3px; }
+  .drink-row .drink-calories { grid-area: calories; justify-self: end; }
+  .drink-row .row-chevron { display: none; }
   .drink-icon { width: 29px; height: 29px; }
-  .drink-name { font-size: 12px; }
-  .drink-meta { font-size: 12px; }
-  .detail-panel { grid-column: 1; grid-row: auto; padding: 16px; }
+  .drink-name { font-size: 13px; line-height: 1.25; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .drink-meta { font-size: 11px; }
+  .drink-stats > span { display: inline; }
+  .detail-panel { width: 100%; min-height: auto; padding: 18px; }
   .detail-name { font-size: 21px; }
   .footer { padding: 12px 18px; flex-wrap: wrap; gap: 7px 14px; font-size: 12px; }
   .footer-disclaimer { width: 100%; margin-left: 0; }

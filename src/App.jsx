@@ -45,6 +45,7 @@ function App() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All drinks');
   const [sortBy, setSortBy] = useState('carbohydrates');
+  const [mobileView, setMobileView] = useState('browse');
   const [isCarbLimitEnabled, setIsCarbLimitEnabled] = useState(true);
   const [maxCarbs, setMaxCarbs] = useState(20);
   const [selectedName, setSelectedName] = useState('Brewed Coffee');
@@ -86,6 +87,8 @@ function App() {
     const nextVariant = bestVariant(group.variants, 'carbohydrates');
     setSelectedName(group.name);
     setSelectedVariant(nextVariant);
+    setMobileView('detail');
+    if (window.matchMedia('(max-width: 700px)').matches) window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function chooseOption(dimension, value) {
@@ -121,7 +124,11 @@ function App() {
           </div>
         </section>
 
-        <div className="content-wrap">
+        <div className={`content-wrap mobile-${mobileView}-view`}>
+          <nav className="mobile-tabs" aria-label="Menu views">
+            <button type="button" className={mobileView === 'browse' ? 'active' : ''} aria-pressed={mobileView === 'browse'} onClick={() => setMobileView('browse')}>Browse</button>
+            <button type="button" className={mobileView === 'detail' ? 'active' : ''} aria-pressed={mobileView === 'detail'} onClick={() => setMobileView('detail')}>Nutrition</button>
+          </nav>
           <aside className="sidebar">
             <div className="sidebar-heading"><span>MENU</span><span className="category-count">{groups.length} drinks</span></div>
             <nav className="category-nav" aria-label="Drink categories">
