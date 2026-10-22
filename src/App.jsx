@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowDownWideNarrow, Bean, ChevronDown, Coffee, Search, SlidersHorizontal, Sparkles } from 'lucide-react';
 import nutrition from './data/nutrition.json';
 
@@ -45,6 +45,7 @@ function App() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All drinks');
   const [sortBy, setSortBy] = useState('carbohydrates');
+  const [isCarbLimitEnabled, setIsCarbLimitEnabled] = useState(true);
   const [maxCarbs, setMaxCarbs] = useState(20);
   const [selectedName, setSelectedName] = useState('Brewed Coffee');
   const [selectedVariant, setSelectedVariant] = useState(nutrition[0]);
@@ -57,7 +58,7 @@ function App() {
 
   const filteredGroups = groups.map((group) => ({
     ...group,
-    variants: group.variants.filter((row) => row.carbohydrates <= maxCarbs),
+    variants: group.variants.filter((row) => !isCarbLimitEnabled || row.carbohydrates <= maxCarbs),
   })).filter((group) => {
     const matchesSearch = group.name.toLowerCase().includes(search.trim().toLowerCase());
     return group.variants.length > 0 && matchesSearch && (category === 'All drinks' || group.category === category);
@@ -99,30 +100,25 @@ function App() {
 
   const visibleCategories = categories.map((label) => ({
     label,
-    count: label === 'All drinks' ? groups.filter((group) => group.variants.some((row) => row.carbohydrates <= maxCarbs)).length
-      : groups.filter((group) => group.category === label && group.variants.some((row) => row.carbohydrates <= maxCarbs)).length,
+    count: label === 'All drinks' ? groups.filter((group) => group.variants.some((row) => !isCarbLimitEnabled || row.carbohydrates <= maxCarbs)).length
+      : groups.filter((group) => group.category === label && group.variants.some((row) => !isCarbLimitEnabled || row.carbohydrates <= maxCarbs)).length,
   }));
 
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#top" aria-label="Starbucks macros home">
+        <a className="brand" href="#top" aria-label="Starbucks PH Macros home">
           <span className="brand-mark"><Bean size={21} strokeWidth={1.8} /></span>
-          <span className="brand-word">sip<span>wise</span></span>
+          <span className="brand-word">Starbucks PH Macros</span>
         </a>
-        <div className="topbar-note"><span className="status-dot" /> Starbucks Philippines <span className="note-divider">/</span> nutrition explorer</div>
-        <a className="source-link" href="https://starbucks.ph/docs/CalorieContentandNutriInfoDatabase.pdf" target="_blank" rel="noreferrer">Nutrition source <ChevronDown size={14} className="source-arrow" /></a>
+        <a className="source-link" href="https://starbucks.ph/docs/CalorieContentandNutriInfoDatabase.pdf" target="_blank" rel="noreferrer">Source PDF <ChevronDown size={14} className="source-arrow" /></a>
       </header>
 
       <main id="top">
         <section className="intro">
           <div className="intro-copy">
-            <div className="eyebrow"><span /> YOUR ORDER, DECODED</div>
-            <h1>Find your <em>usual,</em><br />with the numbers.</h1>
-            <p>Browse the menu, make it yours, and see exactly what’s in your cup.</p>
+            <h1>Menu &amp; nutrition</h1>
           </div>
-          <div className="intro-stamp"><Coffee size={19} /><span>PH MENU<br /><b>NUTRITION</b></span></div>
-          <div className="intro-art" aria-hidden="true"><span className="art-ring" /><span className="art-bean bean-one" /><span className="art-bean bean-two" /></div>
         </section>
 
         <div className="content-wrap">
@@ -137,9 +133,10 @@ function App() {
             </nav>
             <div className="sidebar-rule" />
             <div className="filter-title"><SlidersHorizontal size={15} /> LOW-CARB FILTER</div>
-            <label className="carb-label" htmlFor="carb-limit">Maximum carbs <strong>{maxCarbs}g</strong></label>
-            <input id="carb-limit" className="carb-range" type="range" min="0" max="100" step="1" value={maxCarbs} onChange={(event) => setMaxCarbs(Number(event.target.value))} />
-            <div className="range-labels"><span>0g</span><span>100g</span></div>
+            <label className="carb-toggle-row" htmlFor="carb-limit-enabled"><span>Apply carb limit</span><input id="carb-limit-enabled" type="checkbox" checked={isCarbLimitEnabled} onChange={(event) => setIsCarbLimitEnabled(event.target.checked)} /></label>
+            <label className={`carb-label ${isCarbLimitEnabled ? '' : 'disabled'}`} htmlFor="carb-limit">Maximum carbs <strong>{isCarbLimitEnabled ? `${maxCarbs}g` : 'Off'}</strong></label>
+            <input id="carb-limit" className="carb-range" type="range" min="0" max="100" step="1" value={maxCarbs} disabled={!isCarbLimitEnabled} onChange={(event) => setMaxCarbs(Number(event.target.value))} />
+            <div className={`range-labels ${isCarbLimitEnabled ? '' : 'disabled'}`}><span>0g</span><span>100g</span></div>
             <p className="filter-caption">Only show drinks with at least one available customization under your limit.</p>
             <div className="sidebar-tip"><Sparkles size={15} /><span>Nutrition updates as you change size and milk.</span></div>
           </aside>
@@ -168,13 +165,13 @@ function App() {
                   </button>
                 );
               })}
-              {filteredGroups.length === 0 && <div className="empty-state"><Search size={22} /><h3>No drinks found</h3><p>Try another search or raise your carb limit.</p><button onClick={() => { setSearch(''); setMaxCarbs(100); }}>Show all drinks</button></div>}
+              {filteredGroups.length === 0 && <div className="empty-state"><Search size={22} /><h3>No drinks found</h3><p>Try another search or raise your carb limit.</p><button onClick={() => { setSearch(''); setIsCarbLimitEnabled(false); }}>Show all drinks</button></div>}
             </div>
           </section>
 
           <aside className="detail-panel" aria-label="Drink customization and nutrition">
             {currentVariant ? <>
-              <div className="detail-topline"><span>YOUR CUSTOM CUP</span><span className="live-mark"><i /> LIVE</span></div>
+              <div className="detail-topline"><span>SELECTED DRINK</span><span>PER CUP</span></div>
               <h2 className="detail-name">{currentVariant.name}</h2>
               <p className="detail-serving">{currentVariant.servingSize === 'N/A' ? 'Single serving' : currentVariant.servingSize || 'Single serving'} <span>·</span> {currentVariant.weight}g beverage</p>
               <div className="customizers">
@@ -194,7 +191,7 @@ function App() {
           </aside>
         </div>
       </main>
-      <footer className="footer"><span>Nutrition data sourced from Starbucks Philippines</span><a href="https://starbucks.ph/docs/CalorieContentandNutriInfoDatabase.pdf" target="_blank" rel="noreferrer">View original PDF <span>↗</span></a><span className="footer-disclaimer">Values are provided by Starbucks and may change.</span></footer>
+      <footer className="footer"><span>Personal, non-commercial use only.</span><a href="https://starbucks.ph/docs/CalorieContentandNutriInfoDatabase.pdf" target="_blank" rel="noreferrer">Starbucks Philippines source PDF <span>↗</span></a><span className="footer-disclaimer">Independent project; not affiliated with Starbucks Corporation.</span></footer>
     </div>
   );
 }

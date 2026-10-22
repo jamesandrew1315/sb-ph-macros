@@ -1,6 +1,6 @@
-# Sipwise: Starbucks Philippines macros
+# Starbucks PH Macros
 
-A React app for browsing Starbucks Philippines drinks and comparing nutrition by customization.
+A personal, non-commercial reference for browsing Starbucks Philippines drinks and comparing nutrition by customization. This independent project is not affiliated with Starbucks Corporation.
 
 ## Run locally
 
